@@ -1,0 +1,267 @@
+<!DOCTYPE html>
+
+<html lang="en">
+    <head>
+        <meta charset="utf-8" />
+        <meta
+            content="width=device-width, initial-scale=1, shrink-to-fit=no"
+            name="viewport"
+        />
+        <meta content="" name="description" />
+        <meta content="" name="author" />
+        <title>Video Transcriber</title>
+        <!-- Favicon-->
+        <link href="static/assets/favicon.ico" rel="icon" type="image/x-icon" />
+        <!-- Bootstrap icons-->
+        <link
+            href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.5.0/font/bootstrap-icons.css"
+            rel="stylesheet"
+            type="text/css"
+        />
+        <!-- Google fonts-->
+        <link
+            href="https://fonts.googleapis.com/css?family=Lato:300,400,700,300italic,400italic,700italic"
+            rel="stylesheet"
+            type="text/css"
+        />
+        <!-- Core theme CSS (includes Bootstrap)-->
+        <link href="static/css/styles.css" rel="stylesheet" />
+    </head>
+    <body>
+        <!-- Navigation-->
+        <nav class="navbar navbar-expand-lg navbar-light bg-light static-top">
+            <div
+                class="container d-flex justify-content-between align-items-center"
+            >
+                <div class="d-flex">
+                    <a class="navbar-brand" href="#!" style="margin-top: 4px"
+                        >Video Transcriber and Summariser</a
+                    >
+                    <a href="/">
+                       <button
+                            type="button"
+                            class="btn btn-outline-primary ml-2"
+                            style="margin-left: 10px"
+                        >
+                            New Transcription
+                        </button>
+                    </a>
+                </div>
+                <a class="btn btn-primary" href="/static/User documentation.pdf">Documentation</a>
+            </div>
+        </nav>
+
+        <section>
+            <div class="container">
+                <div class="row">
+                    <div>
+                        <hr />
+                        <h4>
+                            <code>{{ file_name }}</code>
+                        </h4>
+                        <audio id="myAudio" controls style="margin-top: 10px">
+                            <source
+                                src="{{ file_path }}"
+                                type="audio/mpeg"
+                            />
+                            Your browser does not support the audio element.
+                        </audio>
+                        <hr />
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <div>
+            <div class="container">
+                <!-- Summary Section -->
+                <div>
+                    <h4>Summary</h4>
+                    <div id="summary-processing">
+                        <p>For larger files, this may take a while to load. Please wait a few minutes.</p>
+                        <div class="spinner-border" role="status"></div>
+                    </div>
+                    <div id="summary-content" style="margin-top: 15px; white-space: pre-wrap;">The document is a Nobel Lecture...</div>
+                </div>
+                <hr />
+                <!-- Transcript Section -->
+                <div>
+                    <div style="display: flex; align-items: center;">
+                        <h4 style="margin: 0;">Transcript</h4>
+                        <div class="btn-group ml-2" style="margin-left: 30px">
+                            <button type="button" class="btn btn-primary" onclick="selectTranscript('timestamped')">Timestamped</button>
+                            <button type="button" class="btn btn-outline-primary" onclick="selectTranscript('original')">Original</button>
+                            <!-- <button type="button" class="btn btn-outline-primary" onclick="selectTranscript('cleaned')">Cleaned</button> -->
+                        </div>
+                    </div>
+                    <div id="timestamped">
+                        <div id="transcript-timestamped-processing" style="display: none; margin-top: 15px">
+                            <p>For larger files, this may take a while to load. Please wait a few minutes.</p>
+                            <div class="spinner-border" role="status"></div>
+                        </div>
+                        <div id="transcript-timestamped-content" style="margin-top: 15px; white-space: pre-wrap;"></div>
+                    </div>
+                    <div id="original">
+                        <div id="transcript-original-processing" style="margin-top: 15px">
+                            <p>For larger files, this may take a while to load. Please wait a few minutes.</p>
+                            <div class="spinner-border" role="status"></div>
+                        </div>
+                        <div id="transcript-original-content" style="display: none; margin-top: 15px; white-space: pre-wrap;"></div>
+                    </div>
+                    <!-- <div id="cleaned">
+                        <div id="transcript-cleaned-processing" style="margin-top: 15px">
+                            <p>For larger files, this may take a while to load. Please wait a few minutes.</p>
+                            <div class="spinner-border" role="status"></div>
+                        </div>
+                        <div id="transcript-cleaned-content" style="display: none; margin-top: 15px; white-space: pre-wrap;"></div>
+                    </div> -->
+                </div>
+            </div>
+        </div>
+        
+        
+
+        <!-- Footer-->
+        <footer class="footer bg-light">
+            <div class="container">
+                <div class="row">
+                    <div
+                        class="col-lg-6 h-100 text-center text-lg-start my-auto"
+                    >
+                        <p class="text-muted small mb-4 mb-lg-0">
+                            © Xuanyu Liu 2023. Software Major Project.
+                        </p>
+                    </div>
+                </div>
+            </div>
+        </footer>
+        <!-- Bootstrap core JS-->
+        <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.2.3/dist/js/bootstrap.bundle.min.js"></script>
+
+        <script>
+            document.addEventListener("DOMContentLoaded", function () {
+                // Show the processing/loading sections
+                document.getElementById("summary-processing").style.display = "block";
+                document.getElementById("summary-content").style.display = "none";
+                document.getElementById("transcript-timestamped-processing").style.display = "block";
+                document.getElementById("transcript-timestamped-content").style.display = "none";
+                document.getElementById("original").style.display = "none";
+                // document.getElementById("cleaned").style.display = "none";
+
+                // Fetch the data
+                fetchTimestamped()
+                .then(() => fetchOriginal())
+                .then(() => fetchSummary())
+                
+            });
+
+            function selectTranscript(type) {
+                var timestampedBtn = document.querySelector('.btn-group .btn:nth-child(1)');
+                var originalBtn = document.querySelector('.btn-group .btn:nth-child(2)');
+                // var cleanedBtn = document.querySelector('.btn-group .btn:nth-child(3)');
+                
+                // Reset all buttons to outline style
+                timestampedBtn.className = 'btn btn-outline-primary';
+                originalBtn.className = 'btn btn-outline-primary';
+                // cleanedBtn.className = 'btn btn-outline-primary';
+                
+                // Hide all divs
+                document.getElementById("timestamped").style.display = "none";
+                document.getElementById("original").style.display = "none";
+                // document.getElementById("cleaned").style.display = "none";
+
+                // Set the clicked button to solid style
+                if (type === 'timestamped') {
+                    timestampedBtn.classList.remove('btn-outline-primary');
+                    timestampedBtn.classList.add('btn-primary');
+                    document.getElementById("timestamped").style.display = "block";
+                    fetchTimestamped();
+                } else {
+                    originalBtn.classList.remove('btn-outline-primary');
+                    originalBtn.classList.add('btn-primary');
+                    document.getElementById("original").style.display = "block";
+                    fetchOriginal();
+                }
+            }
+
+            function fetchTimestamped() {
+                return fetch("/path_to_timestamped_endpoint")
+                    .then(response => response.json())
+                    .then(data => {
+                        // Update the timetstamped content and hide the processing/loading section
+                        document.getElementById("transcript-timestamped-content").innerHTML = data.content;
+                        document.getElementById("transcript-timestamped-content").style.display = "block";
+                        document.getElementById("transcript-timestamped-processing").style.display = "none";
+                        const audioElement = document.getElementById('myAudio');
+                        const timestamps = document.querySelectorAll('.timestamp');
+                        
+                        timestamps.forEach(function(timestamp) {
+                            timestamp.addEventListener('click', function(event) {
+                                event.preventDefault();
+                                const time = parseFloat(this.getAttribute('data-time'));
+                                audioElement.currentTime = time;
+                                audioElement.play();  // Optional: play the audio after jumping to the timestamp
+                            });
+                        });
+                    })
+                    .catch(error => {
+                        console.error("Error fetching timestamped transcript:", error);
+                    });
+            }
+
+            function fetchOriginal() {
+                return fetch("/path_to_original_endpoint")
+                    .then(response => response.json())
+                    .then(data => {
+                        // Update the original content and hide the processing/loading section
+                        document.getElementById("transcript-original-content").innerHTML = data.content;
+                        document.getElementById("transcript-original-content").style.display = "block";
+                        document.getElementById("transcript-original-processing").style.display = "none";
+                        const audioElement = document.getElementById('myAudio');
+                        
+                        document.querySelectorAll('.transcript-section').forEach(function(section) {
+                            section.addEventListener('click', function() {
+                                const audioElement = document.getElementById('myAudio');  
+                                const time = parseFloat(this.querySelector('.timestamp-jump').getAttribute('data-time'));
+                                audioElement.currentTime = time;
+                                audioElement.play(); 
+                            });
+                        });
+                    })
+                    .catch(error => {
+                        console.error("Error fetching original transcript:", error);
+                    });
+            }
+
+            // function fetchCleaned() {
+            //     return fetch("/path_to_cleaned_endpoint")
+            //         .then(response => response.json())
+            //         .then(data => {
+            //             // Update the summary content and hide the processing/loading section
+            //             document.getElementById("transcript-cleaned-content").innerText = data.content;
+            //             document.getElementById("transcript-cleaned-content").style.display = "block";
+            //             document.getElementById("transcript-cleaned-processing").style.display = "none";
+                        
+            //         })
+            //         .catch(error => {
+            //             console.error("Error fetching cleaned transcript:", error);
+            //         });
+            // }
+
+            function fetchSummary() {
+                return fetch("/path_to_summary_endpoint")
+                    .then(response => response.json())
+                    .then(data => {
+                        // Update the summary content and hide the processing/loading section
+                        document.getElementById("summary-content").innerText = data.content;
+                        document.getElementById("summary-content").style.display = "block";
+                        document.getElementById("summary-processing").style.display = "none";
+                    })
+                    .catch(error => {
+                        console.error("Error fetching summary:", error);
+                    });
+            }
+
+        </script>
+    </body>
+</html>

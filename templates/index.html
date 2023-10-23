@@ -1,0 +1,275 @@
+<!DOCTYPE html>
+
+<html lang="en">
+    <head>
+        <meta charset="utf-8" />
+        <meta
+            content="width=device-width, initial-scale=1, shrink-to-fit=no"
+            name="viewport"
+        />
+        <meta content="" name="description" />
+        <meta content="" name="author" />
+        <title>Video Transcriber</title>
+        <!-- Favicon-->
+        <link href="static/assets/favicon.ico" rel="icon" type="image/x-icon" />
+        <!-- Bootstrap icons-->
+        <link
+            href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.5.0/font/bootstrap-icons.css"
+            rel="stylesheet"
+            type="text/css"
+        />
+        <!-- Google fonts-->
+        <link
+            href="https://fonts.googleapis.com/css?family=Lato:300,400,700,300italic,400italic,700italic"
+            rel="stylesheet"
+            type="text/css"
+        />
+        <!-- Core theme CSS (includes Bootstrap)-->
+        <link href="static/css/styles.css" rel="stylesheet" />
+    </head>
+    <body>
+        <!-- Navigation-->
+        <nav class="navbar navbar-light bg-light static-top">
+            <div class="container">
+                <a class="navbar-brand" href="#!">Video Transcriber</a>
+                <a class="btn btn-primary" href="/static/User documentation.pdf"
+                    >Documentation</a
+                >
+            </div>
+        </nav>
+        <section
+            id="processing"
+            style="
+                display: none;
+                position: fixed;
+                top: 0;
+                left: 0;
+                width: 100%;
+                height: 100%;
+                background-color: rgba(0, 0, 0, 0.8);
+                z-index: 9999;
+            "
+        >
+            <div class="container h-100">
+                <div
+                    class="row justify-content-center align-items-center h-100"
+                >
+                    <div class="col-12 text-center">
+                        <h2 class="text-white">Uploading...</h2>
+                        <p class="text-muted">
+                            For larger files, this may take a while.
+                        </p>
+                        <div
+                            class="spinner-border text-primary"
+                            role="status"
+                        ></div>
+                    </div>
+                </div>
+            </div>
+        </section>
+        <!-- Masthead-->
+        <header class="masthead">
+            <div class="container position-relative">
+                <div class="row justify-content-center">
+                    <div class="col-xl-6">
+                        <div class="text-center text-white">
+                            <!-- Page heading-->
+                            <h1 class="mb-5">
+                                Summarise or transcribe a video now!
+                            </h1>
+                            <!-- File upload form -->
+                            <form
+                                action="/"
+                                class="form-subscribe"
+                                enctype="multipart/form-data"
+                                id="fileForm"
+                                method="post"
+                            >
+                                <!-- File input -->
+                                <div class="row mb-3">
+                                    <div class="col-12 mb-2">
+                                        <label
+                                            class="form-label"
+                                            style="font-size: 1.5rem"
+                                            >Upload an audio or video file less
+                                            than 25mb</label
+                                        >
+                                    </div>
+                                    <div class="col d-flex align-items-center">
+                                        <input
+                                            accept=".m4a,.mp3,.webm,.mp4,.mpga,.wav,.mpeg,.ogg,.oga,.flac"
+                                            class="form-control"
+                                            id="fileInput"
+                                            name="file"
+                                            type="file"
+                                            required
+                                        />
+                                    </div>
+                                    <div
+                                        class="col-auto d-flex align-items-center"
+                                    >
+                                        <button
+                                            class="btn btn-primary btn-lg"
+                                            type="submit"
+                                        >
+                                            Upload
+                                        </button>
+                                    </div>
+                                </div>
+                            </form>
+                            <!-- YouTube link form -->
+                            <form action="/" id="youtubeForm" method="post">
+                                <div class="row mb-3">
+                                    <div class="col-12 mb-2">
+                                        <label
+                                            class="form-label"
+                                            style="font-size: 1.5rem"
+                                        >
+                                            Or enter a YouTube link
+                                        </label>
+                                    </div>
+                                    <div class="col d-flex align-items-center">
+                                        <input
+                                            class="form-control"
+                                            id="youtubeInput"
+                                            name="youtube_link"
+                                            type="url"
+                                            placeholder="https://www.youtube.com/watch?v=..."
+                                        />
+                                    </div>
+                                    <div
+                                        class="col-auto d-flex align-items-center"
+                                    >
+                                        <button
+                                            class="btn btn-primary btn-lg"
+                                            type="submit"
+                                        >
+                                            Enter
+                                        </button>
+                                    </div>
+                                </div>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </header>
+        <!-- Icons Grid-->
+        <section class="features-icons bg-light text-center">
+            <div class="container">
+                <div class="row">
+                    <div class="col-lg-4">
+                        <div
+                            class="features-icons-item mx-auto mb-5 mb-lg-0 mb-lg-3"
+                        >
+                            <div class="features-icons-icon d-flex">
+                                <i class="bi-stopwatch m-auto text-primary"></i>
+                            </div>
+                            <h3>No time to spare</h3>
+                            <p class="lead mb-0">
+                                Not willing to commit to a whole video? Read the
+                                summary instead!
+                            </p>
+                        </div>
+                    </div>
+                    <div class="col-lg-4">
+                        <div
+                            class="features-icons-item mx-auto mb-5 mb-lg-0 mb-lg-3"
+                        >
+                            <div class="features-icons-icon d-flex">
+                                <i class="bi-badge-cc m-auto text-primary"></i>
+                            </div>
+                            <h3>Audio-to-Text</h3>
+                            <p class="lead mb-0">
+                                Convert podcasts, lectures, videos of any kind
+                                into easily readable content.
+                            </p>
+                        </div>
+                    </div>
+                    <div class="col-lg-4">
+                        <div class="features-icons-item mx-auto mb-0 mb-lg-3">
+                            <div class="features-icons-icon d-flex">
+                                <i class="bi-gear m-auto text-primary"></i>
+                            </div>
+                            <h3>State of art</h3>
+                            <p class="lead mb-0">
+                                Uses OpenAI's Whisper transcription model.
+                            </p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+        <section class="call-to-action text-white text-center" id="signup">
+            <div class="container position-relative">
+                <div class="row justify-content-center">
+                    <div class="col-xl-6"></div>
+                </div>
+            </div>
+        </section>
+        <!-- Footer-->
+        <footer class="footer bg-light">
+            <div class="container">
+                <div class="row">
+                    <div
+                        class="col-lg-6 h-100 text-center text-lg-start my-auto"
+                    >
+                        <p class="text-muted small mb-4 mb-lg-0">
+                            © Xuanyu Liu 2023. Software Major Project.
+                        </p>
+                    </div>
+                </div>
+            </div>
+        </footer>
+        <!-- Bootstrap core JS-->
+        <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.2.3/dist/js/bootstrap.bundle.min.js"></script>
+
+        <script>
+            document.addEventListener("DOMContentLoaded", function () {
+                // Get both form elements
+                const fileForm = document.getElementById("fileForm");
+                const youtubeForm = document.getElementById("youtubeForm");
+                console.log(fileForm);  // should log the form element or null (if not found)
+                console.log(youtubeForm);  // should log the form element or null (if not found)
+
+                // Create a function to handle form submission
+                function handleFormSubmit(event) {
+                    // Prevent the form from submitting the traditional way
+                    event.preventDefault();
+                    console.log("Form submission detected");
+
+                    // The form that triggered the event
+                    const form = event.currentTarget;
+
+                    // Show the processing section and hide the results section
+                    document.getElementById("processing").style.display =
+                        "block";
+                    // document.getElementById("results").style.display = "none";
+                    // Send an AJAX request to the server
+                    fetch("/", {
+                        method: "POST",
+                        body: new FormData(form),
+                        redirect: "manual", // Don't automatically follow redirects
+                    })
+                        .then((response) => {
+                            if (response.type === "opaqueredirect") {
+                                window.location.href = "/results"; // Redirect to the results page
+                            } else {
+                                return response.text(); // Handle non-redirect responses
+                            }
+                        })
+                        .then((data) => {
+                            console.error("Error:", data);
+                        })
+                        .catch((error) => {
+                            console.error("Error:", error);
+                        });
+                }
+
+                // Add event listeners to both forms
+                fileForm.addEventListener("submit", handleFormSubmit);
+                youtubeForm.addEventListener("submit", handleFormSubmit);
+            });
+        </script>
+    </body>
+</html>
